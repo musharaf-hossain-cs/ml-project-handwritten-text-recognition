@@ -6,8 +6,8 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau, T
 import sys
 sys.path.insert(0, '../..')
 sys.path.insert(0, '..')
-sys.path.insert(0, 'H:/Desktop_Files/CSE472/Project/Mltu/mltu')
-sys.path.insert(0, 'H:/Desktop_Files/CSE472/Project/Mltu/mltu/Tutorials/04_sentence_recognition')
+sys.path.insert(0, 'E:/Backup/mltu-practice')
+sys.path.insert(0, 'E:/Backup/mltu-practice/Tutorials/04_sentence_recognition')
 
 from mltu.dataProvider import DataProvider
 from mltu.preprocessors import ImageReader
@@ -32,8 +32,8 @@ from tqdm import tqdm
 # sentences_txt_path = stow.join('Datasets', 'IAM_Sentences', 'ascii', 'sentences.txt')
 # sentences_folder_path = stow.join('Datasets', 'IAM_Sentences', 'sentences')
 
-sentences_txt_path = stow.join('../../', 'Dataset', 'ascii', 'lines.txt')
-sentences_folder_path = stow.join('../../', 'Dataset', 'lines')
+sentences_txt_path = stow.join('E:/Backup/Dataset', 'ascii', 'lines.txt')
+sentences_folder_path = stow.join('E:/Backup/Dataset', 'lines')
 
 dataset, vocab, max_len = [], set(), 0
 words = open(sentences_txt_path, "r").readlines()
@@ -82,6 +82,8 @@ data_provider = DataProvider(
         ],
 )
 
+
+
 # Split the dataset into training and validation sets
 train_data_provider, val_data_provider = data_provider.split(split = 0.9)
 
@@ -119,11 +121,13 @@ model.summary(line_length=110)
 
 # Define callbacks
 earlystopper = EarlyStopping(monitor='val_CER', patience=20, verbose=1, mode='min')
-checkpoint = ModelCheckpoint(f"{configs.model_path}/model.h5", monitor='val_CER', verbose=1, save_best_only=True, mode='min')
+checkpoint = ModelCheckpoint(f"{configs.model_path}/model.h5", monitor='val_CER', verbose=1, save_best_only=False, mode='min')
 trainLogger = TrainLogger(configs.model_path)
 tb_callback = TensorBoard(f'{configs.model_path}/logs', update_freq=1)
 reduceLROnPlat = ReduceLROnPlateau(monitor='val_CER', factor=0.9, min_delta=1e-10, patience=10, verbose=1, mode='auto')
 model2onnx = Model2onnx(f"{configs.model_path}/model.h5")
+
+
 
 # Train the model
 model.fit(
