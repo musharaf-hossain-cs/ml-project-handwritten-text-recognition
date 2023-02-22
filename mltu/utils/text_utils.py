@@ -5,7 +5,7 @@ from itertools import groupby
 def ctc_decoder(predictions: np.ndarray, chars: typing.Union[str, list]) -> typing.List[str]:
     ''' CTC greedy decoder for predictions
     
-    Args:
+    Args :
         predictions (np.ndarray): predictions from model
         chars (typing.Union[str, list]): list of characters
 
