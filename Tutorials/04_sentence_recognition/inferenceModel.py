@@ -1,6 +1,13 @@
 import cv2
 import typing
 import numpy as np
+import sys
+
+sys.path.insert(0, '../..')
+sys.path.insert(0, '..')
+sys.path.insert(0, 'H:/Desktop_Files/CSE472/Project/Mltu/mltu')
+sys.path.insert(0, 'H:/Desktop_Files/CSE472/Project/Mltu/mltu/Tutorials/04_sentence_recognition')
+
 
 import sys
 sys.path.insert(0, '../..')

@@ -13,13 +13,13 @@ def ctc_decoder(predictions: np.ndarray, chars: typing.Union[str, list]) -> typi
         typing.List[str]: list of words
     '''
     # use argmax to find the index of the highest probability
-    print(predictions.shape, predictions)
+    # print(predictions.shape, predictions)
     argmax_preds = np.argmax(predictions, axis=-1)
     
     # use groupby to find continuous same indexes
     grouped_preds = [[k for k,_ in groupby(preds)] for preds in argmax_preds]
 
-    print('grouped_preds: ', grouped_preds)
+    # print('grouped_preds: ', grouped_preds)
 
     # convert indexes to chars
     texts = ["".join([chars[k] for k in group if k < len(chars)]) for group in grouped_preds]
