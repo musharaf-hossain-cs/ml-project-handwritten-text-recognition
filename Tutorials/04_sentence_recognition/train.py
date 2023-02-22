@@ -103,6 +103,7 @@ model = train_model(
 checkpoint_file = f"{configs.model_path}/model.h5"
 if stow.exists(checkpoint_file):
     model = tf.keras.models.load_model(checkpoint_file, compile=False)
+    # tf.saved_model.save(model, "tmp_model")
     print(f"Loaded model from {checkpoint_file}")
 
 # Compile the model and print summary
