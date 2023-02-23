@@ -3,17 +3,15 @@ import typing
 import numpy as np
 import sys
 
-sys.path.insert(0, '../..')
-sys.path.insert(0, '..')
-sys.path.insert(0, 'H:/Desktop_Files/CSE472/Project/Mltu/mltu')
-sys.path.insert(0, 'H:/Desktop_Files/CSE472/Project/Mltu/mltu/Tutorials/04_sentence_recognition')
+from configs import ModelConfigs
 
+# Create a ModelConfigs object to store model configurations
+configs = ModelConfigs()
 
-import sys
-sys.path.insert(0, '../..')
-sys.path.insert(0, '..')
-sys.path.insert(0, 'E:/Backup/mltu-practice')
-sys.path.insert(0, 'E:/Backup/mltu-practice/Tutorials/04_sentence_recognition')
+# sys.path.insert(0, '../..')
+# sys.path.insert(0, '..')
+sys.path.insert(0, configs.working_dir)
+sys.path.insert(0, configs.working_dir + '/Tutorials/04_sentence_recognition')
 
 from mltu.inferenceModel import OnnxInferenceModel
 from mltu.utils.text_utils import ctc_decoder, get_cer, get_wer
@@ -51,6 +49,7 @@ if __name__ == "__main__":
     accum_cer, accum_wer = [], []
     for image_path, label in tqdm(df):
         image = cv2.imread(image_path)
+        # print(image)
 
         prediction_text = model.predict(image)
 

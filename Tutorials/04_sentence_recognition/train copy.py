@@ -4,13 +4,15 @@ except: pass
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau, TensorBoard
 import sys
+import pandas as pd
+
 from configs import ModelConfigs
 
 # Create a ModelConfigs object to store model configurations
 configs = ModelConfigs()
 
-# sys.path.insert(0, '../..')
-# sys.path.insert(0, '..')
+sys.path.insert(0, '../..')
+sys.path.insert(0, '..')
 sys.path.insert(0, configs.working_dir)
 sys.path.insert(0, configs.working_dir + '/Tutorials/04_sentence_recognition')
 
@@ -21,6 +23,7 @@ from mltu.augmentors import RandomBrightness, RandomRotate, RandomErodeDilate, R
 from mltu.losses import CTCloss
 from mltu.callbacks import Model2onnx, TrainLogger
 from mltu.metrics import CERMetric, WERMetric
+from mltu.configs import BaseModelConfigs
 
 # import from a location relative to the current file from parent folder
 
@@ -39,41 +42,91 @@ from tqdm import tqdm
 sentences_txt_path = stow.join(configs.dataset_path, 'ascii', 'lines.txt')
 sentences_folder_path = stow.join(configs.dataset_path, 'lines')
 
-dataset, vocab, max_len = [], set(), 0
-words = open(sentences_txt_path, "r").readlines()
-for line in tqdm(words):
-    if line.startswith("#"):
-        continue
 
-    line_split = line.split(" ")
-    if line_split[2] == "err":
-        continue
+def create_dataset():
+    dataset, vocab, max_len = [], set(), 0
+    words = open(sentences_txt_path, "r").readlines()
+    for line in tqdm(words):
+        if line.startswith("#"):
+            continue
 
-    folder1 = line_split[0][:3]
-    folder2 = line_split[0][:8]
-    file_name = line_split[0] + ".png"
-    label = line_split[-1].rstrip('\n')
+        line_split = line.split(" ")
+        if line_split[2] == "err":
+            continue
 
-    # recplace '|' with ' ' in label
-    label = label.replace('|', ' ')
+        folder1 = line_split[0][:3]
+        folder2 = line_split[0][:8]
+        file_name = line_split[0] + ".png"
+        label = line_split[-1].rstrip('\n')
 
-    rel_path = stow.join(sentences_folder_path, folder1, folder2, file_name)
-    if not stow.exists(rel_path):
-        continue
+        # recplace '|' with ' ' in label
+        label = label.replace('|', ' ')
 
-    dataset.append([rel_path, label])
-    vocab.update(list(label))
-    max_len = max(max_len, len(label))
+        rel_path = stow.join(sentences_folder_path, folder1, folder2, file_name)
+        if not stow.exists(rel_path):
+            continue
 
-# Save vocab and maximum text length to configs
+        dataset.append([rel_path, label])
+        vocab.update(list(label))
+        max_len = max(max_len, len(label))
+        
+        return dataset, vocab, max_len
 
-new_vocab = configs.vocab
-for char in vocab:
-    if char not in new_vocab:
-        new_vocab += char
-configs.vocab = new_vocab
-configs.max_text_length = max_len
-configs.save()
+
+# Create TensorFlow model architecture
+def create_new_model():
+    dataset, vocab, max_len = create_dataset()
+    configs.vocab = "".join(vocab)
+    configs.max_text_length = max_len
+    configs.save()
+
+    model = train_model(
+        input_dim = (configs.height, configs.width, 3),
+        output_dim = len(configs.vocab),
+    )
+    print(f"Created new model with {model.count_params()} parameters")
+    return model, dataset
+
+# Load existing model
+def load_existing_model(checkpoint_file):
+    model = tf.keras.models.load_model(checkpoint_file, compile=False)
+    print(f"Loaded model from {checkpoint_file}")
+
+    # load configs
+    configs = BaseModelConfigs.load("Models/yaml/configs.yaml")
+
+    # # load processed dataset from train.csv and val.csv file and combine them
+    # train_dataset = pd.read_csv(f"{configs.model_path}/train.csv")
+    # val_dataset = pd.read_csv(f"{configs.model_path}/val.csv")
+    # dataset = pd.concat([train_dataset, val_dataset], ignore_index=True)
+    dataset, vocab, max_len = create_dataset()
+    
+    # make dataset a list of lists
+    # dataset = dataset.values.tolist()
+    # print('\n\n\n\n\ndataset type', type(dataset),dataset[0], '\n\n\n\n\n')
+    # exit()
+    return model, dataset
+
+
+
+
+model = None
+dataset = None
+is_new_model = False
+# Check whether there is an existing model file and load it
+checkpoint_file = f"{configs.model_path}/model.h5"
+if stow.exists(checkpoint_file):
+    model, dataset = load_existing_model(checkpoint_file)
+else:
+    model, dataset = create_new_model()
+    is_new_model = True
+
+if model is None:
+    print("Model is None")
+    exit()
+if dataset is None:
+    print("Dataset is None")
+    exit()
 
 # Create a data provider for the dataset
 data_provider = DataProvider(
@@ -88,8 +141,6 @@ data_provider = DataProvider(
         ],
 )
 
-
-
 # Split the dataset into training and validation sets
 train_data_provider, val_data_provider = data_provider.split(split = 0.9)
 
@@ -100,19 +151,6 @@ train_data_provider.augmentors = [
     RandomSharpen(),
     ]
 
-# Creating TensorFlow model architecture
-model = train_model(
-    input_dim = (configs.height, configs.width, 3),
-    output_dim = len(configs.vocab),
-)
-
-
-# Check whether there is an existing model file and load it
-checkpoint_file = f"{configs.model_path}/model.h5"
-if stow.exists(checkpoint_file):
-    model = tf.keras.models.load_model(checkpoint_file, compile=False)
-    # tf.saved_model.save(model, "tmp_model")
-    print(f"Loaded model from {checkpoint_file}")
 
 # Compile the model and print summary
 model.compile(
@@ -146,5 +184,6 @@ model.fit(
 )
 
 # Save training and validation datasets as csv files
-train_data_provider.to_csv(stow.join(configs.model_path, 'train.csv'))
-val_data_provider.to_csv(stow.join(configs.model_path, 'val.csv'))
+if is_new_model:
+    train_data_provider.to_csv(stow.join(configs.model_path, 'train.csv'))
+    val_data_provider.to_csv(stow.join(configs.model_path, 'val.csv'))
