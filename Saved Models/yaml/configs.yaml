@@ -1,0 +1,9 @@
+batch_size: 32
+height: 96
+learning_rate: 0.001
+max_text_length: 77
+model_path: Models\yaml
+train_epochs: 5
+train_workers: 20
+vocab: 'PUH.i2oF?VBmO,S!b)Wc4w-5CkRDqtZpEg9Y3aTJjA''1vz&6"lQru(0#IhGNenxyds87: ML;Kf'
+width: 1408
