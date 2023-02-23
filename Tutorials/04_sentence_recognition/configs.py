@@ -2,7 +2,7 @@ import stow
 from datetime import datetime
 import sys
 
-working_dir = 'E:\Backup\FinalProjectML\ml-project-handwritten-text-recognition'
+working_dir = 'H:\Desktop_Files\CSE472\Project\Mltu\mltu'
 sys.path.insert(0, working_dir)
 
 from mltu.configs import BaseModelConfigs
@@ -20,7 +20,7 @@ class ModelConfigs(BaseModelConfigs):
         self.learning_rate = 0.001
         self.train_epochs = 10
         self.train_workers = 20
-        self.dataset_path = 'E:\Backup\Dataset'
+        self.dataset_path = 'H:\Desktop_Files\CSE472\Project\Dataset'
         self.working_dir = working_dir
 
 class ModelConfigs2(BaseModelConfigs):
@@ -34,7 +34,7 @@ class ModelConfigs2(BaseModelConfigs):
         self.max_text_length = 0
         self.batch_size = 32
         self.learning_rate = 0.001
-        self.train_epochs = 20
+        self.train_epochs = 5
         self.train_workers = 20
-        self.dataset_path = 'E:\Backup\Dataset'
+        self.dataset_path = 'H:\Desktop_Files\CSE472\Project\Dataset'
         self.working_dir = working_dir

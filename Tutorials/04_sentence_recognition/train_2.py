@@ -3,11 +3,16 @@ try: [tf.config.experimental.set_memory_growth(gpu, True) for gpu in tf.config.e
 except: pass
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau, TensorBoard
+from configs import ModelConfigs2 as ModelConfigs
 import sys
-sys.path.insert(0, '../..')
-sys.path.insert(0, '..')
-sys.path.insert(0, 'E:/Backup/mltu-practice')
-sys.path.insert(0, 'E:/Backup/mltu-practice/Tutorials/04_sentence_recognition')
+
+# Create a ModelConfigs object to store model configurations
+configs = ModelConfigs()
+
+# sys.path.insert(0, '../..')
+# sys.path.insert(0, '..')
+sys.path.insert(0, configs.working_dir)
+sys.path.insert(0, configs.working_dir + '/Tutorials/04_sentence_recognition')
 
 from mltu.dataProvider import DataProvider
 from mltu.preprocessors import ImageReader
@@ -21,7 +26,6 @@ from mltu.metrics import CERMetric, WERMetric
 
 
 from model import train_model_2 as train_model
-from configs import ModelConfigs2 as ModelConfigs
 
 # from transformers import ImageResizer
 
@@ -32,8 +36,8 @@ from tqdm import tqdm
 # sentences_txt_path = stow.join('Datasets', 'IAM_Sentences', 'ascii', 'sentences.txt')
 # sentences_folder_path = stow.join('Datasets', 'IAM_Sentences', 'sentences')
 
-sentences_txt_path = stow.join('E:/Backup/Dataset', 'ascii', 'lines.txt')
-sentences_folder_path = stow.join('E:/Backup/Dataset', 'lines')
+sentences_txt_path = stow.join(configs.dataset_path, 'ascii', 'lines.txt')
+sentences_folder_path = stow.join(configs.dataset_path, 'lines')
 
 dataset, vocab, max_len = [], set(), 0
 words = open(sentences_txt_path, "r").readlines()
