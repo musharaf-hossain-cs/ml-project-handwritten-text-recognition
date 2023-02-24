@@ -4,7 +4,7 @@ except: pass
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau, TensorBoard
 import sys
-from configs import ModelConfigs
+from configs import ModelConfigs, ModelConfigs2
 
 # Create a ModelConfigs object to store model configurations
 configs = ModelConfigs()
