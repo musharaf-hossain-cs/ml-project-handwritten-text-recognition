@@ -3,10 +3,10 @@ import typing
 import numpy as np
 import sys
 
-from configs import ModelConfigs
+from configs import ModelConfigs, ModelConfigs2
 
 # Create a ModelConfigs object to store model configurations
-configs = ModelConfigs()
+configs = ModelConfigs2()
 
 # sys.path.insert(0, '../..')
 # sys.path.insert(0, '..')
