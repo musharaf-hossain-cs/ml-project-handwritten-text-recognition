@@ -6,7 +6,7 @@ import sys
 from configs import ModelConfigs, ModelConfigs2
 
 # Create a ModelConfigs object to store model configurations
-configs = ModelConfigs2()
+configs = ModelConfigs()
 
 # sys.path.insert(0, '../..')
 # sys.path.insert(0, '..')
