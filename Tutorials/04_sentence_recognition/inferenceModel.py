@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
         cer = get_cer(prediction_text, label)
         wer = get_wer(prediction_text, label)
-        print(f"Image: {image_path}; Label: ({label}); Prediction: ({prediction_text}); CER: {cer}; WER: {wer}")
+        print(f"Image: {image_path}; Label: ({label}); \nPrediction: ({prediction_text}); \nCER: {cer}; WER: {wer}")
 
         accum_cer.append(cer)
         accum_wer.append(wer)
