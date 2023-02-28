@@ -40,11 +40,11 @@ if __name__ == "__main__":
     from tqdm import tqdm
     from mltu.configs import BaseModelConfigs
 
-    configs = BaseModelConfigs.load("Models/yaml2/configs.yaml")
+    configs = BaseModelConfigs.load("Models/yaml/configs.yaml")
 
     model = ImageToWordModel(model_path=configs.model_path, char_list=configs.vocab)
 
-    df = pd.read_csv("Models/yaml2/val.csv").values.tolist()
+    df = pd.read_csv("Models/yaml/val.csv").values.tolist()
 
     accum_cer, accum_wer = [], []
     for image_path, label in tqdm(df):
@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
         cer = get_cer(prediction_text, label)
         wer = get_wer(prediction_text, label)
-        print(f"Image: {image_path}; Label: ({label}); Prediction: ({prediction_text}); CER: {cer}; WER: {wer}")
+        print(f"Image: {image_path}; Label: ({label}); \nPrediction: ({prediction_text}); \nCER: {cer}; WER: {wer}")
 
         accum_cer.append(cer)
         accum_wer.append(wer)
